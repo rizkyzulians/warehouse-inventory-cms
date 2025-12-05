@@ -79,6 +79,7 @@ export default function PembelianPage() {
     try {
       const payload = {
         ...formData,
+        tanggal: formData.tanggal + ':00Z',
         details: details.filter(d => d.barang_id > 0 && d.qty > 0)
       }
 
@@ -221,7 +222,7 @@ export default function PembelianPage() {
                       <input
                         type="datetime-local"
                         value={formData.tanggal}
-                        onChange={(e) => setFormData({ ...formData, tanggal: e.target.value + ':00Z' })}
+                        onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
                         required
                       />

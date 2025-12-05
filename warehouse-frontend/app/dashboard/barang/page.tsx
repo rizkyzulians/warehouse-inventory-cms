@@ -86,15 +86,40 @@ export default function BarangPage() {
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this item?')) return
-
-    try {
-      await api.delete(`/barang/${id}`)
-      toast.success('Barang deleted successfully!')
-      fetchBarangs()
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Delete failed')
-    }
+    toast((t) => (
+      <div className="flex flex-col gap-3">
+        <div className="font-semibold">Konfirmasi Hapus</div>
+        <div>Apakah Anda yakin ingin menghapus barang ini?</div>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium"
+          >
+            Batal
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id)
+              try {
+                await api.delete(`/barang/${id}`)
+                toast.success('Barang berhasil dihapus!')
+                fetchBarangs()
+              } catch (error: any) {
+                toast.error(error.response?.data?.message || 'Gagal menghapus barang')
+              }
+            }}
+            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded text-sm font-medium"
+          >
+            Hapus
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: Infinity,
+      style: {
+        minWidth: '320px'
+      }
+    })
   }
 
   const resetForm = () => {
