@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 
 interface StokBarang {
@@ -18,6 +19,7 @@ interface StokBarang {
 }
 
 export default function StokPage() {
+  const router = useRouter()
   const [stoks, setStoks] = useState<StokBarang[]>([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
@@ -49,12 +51,20 @@ export default function StokPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Laporan Stock</h1>
-        <button
-          onClick={fetchStoks}
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Refresh
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.push('/dashboard/history')}
+            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+          >
+            View History
+          </button>
+          <button
+            onClick={fetchStoks}
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Search */}

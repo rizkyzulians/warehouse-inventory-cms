@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import api from '@/lib/api'
+import { useRouter } from 'next/navigation'
 
 interface Pembelian {
   id: number
@@ -28,6 +29,7 @@ interface DetailItem {
 }
 
 export default function PembelianPage() {
+  const router = useRouter()
   const [pembelians, setPembelians] = useState<Pembelian[]>([])
   const [barangs, setBarangs] = useState<Barang[]>([])
   const [loading, setLoading] = useState(false)
@@ -136,12 +138,20 @@ export default function PembelianPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Pembelian</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          + Tambah Pembelian
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.push("/dashboard/history")}
+            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+          >
+            View History
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          >
+            + Tambah Penjualan
+          </button>
+        </div>
       </div>
 
       {/* Table */}
