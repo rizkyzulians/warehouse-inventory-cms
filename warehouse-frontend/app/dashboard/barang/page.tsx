@@ -257,17 +257,17 @@ export default function BarangPage() {
                     {editId ? 'Edit Barang' : 'Tambah Barang'}
                   </h3>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Kode Barang</label>
-                    <input
-                      type="text"
-                      value={formData.kode_barang}
-                      onChange={(e) => setFormData({ ...formData, kode_barang: e.target.value })}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                      required
-                      disabled={!!editId}
-                    />
-                  </div>
+                  {editId && (
+                    <div className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">Kode Barang</label>
+                      <input
+                        type="text"
+                        value={formData.kode_barang}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100"
+                        disabled
+                      />
+                    </div>
+                  )}
 
                   <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">Nama Barang</label>

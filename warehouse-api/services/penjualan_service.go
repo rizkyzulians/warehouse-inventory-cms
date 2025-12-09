@@ -36,13 +36,27 @@ func (s *penjualanService) CreatePenjualan(req *models.CreatePenjualanRequest, u
 		return nil, fmt.Errorf("details cannot be empty")
 	}
 
+	// Auto-generate no faktur if empty
+	if req.NoFaktur == "" {
+		noFaktur, err := s.penjualanRepo.GenerateNoFaktur(req.Tanggal)
+		if err != nil {
+			return nil, err
+		}
+		req.NoFaktur = noFaktur
+	}
+
 	// Validate stock availability and calculate total
 	var total float64
-	for _, detail := range req.Details {
-		// Validate barang exists
-		_, err := s.barangRepo.FindByID(detail.BarangID)
+	for i, detail := range req.Details {
+		// Validate barang exists and get harga jual
+		barang, err := s.barangRepo.FindByID(detail.BarangID)
 		if err != nil {
 			return nil, fmt.Errorf("barang with id %d not found", detail.BarangID)
+		}
+
+		// Auto-fill harga jual from master barang if not provided
+		if detail.Harga == 0 {
+			req.Details[i].Harga = barang.HargaJual
 		}
 
 		// Check stock
@@ -67,7 +81,7 @@ func (s *penjualanService) CreatePenjualan(req *models.CreatePenjualanRequest, u
 			}
 		}
 
-		subtotal := float64(detail.Qty) * detail.Harga
+		subtotal := float64(detail.Qty) * req.Details[i].Harga
 		total += subtotal
 	}
 

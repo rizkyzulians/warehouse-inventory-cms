@@ -13,6 +13,7 @@ type BarangRepository interface {
 	Create(barang *models.Barang) error
 	Update(barang *models.Barang) error
 	Delete(id int) error
+	GenerateKodeBarang() (string, error)
 }
 
 type barangRepository struct {
@@ -129,7 +130,30 @@ func (r *barangRepository) FindAllWithStok(search string, limit, offset int) ([]
 	return barangs, total, nil
 }
 
+func (r *barangRepository) GenerateKodeBarang() (string, error) {
+	var lastNumber int
+	query := `SELECT COALESCE(MAX(CAST(SUBSTRING(kode_barang FROM 4) AS INTEGER)), 0) 
+	          FROM master_barang WHERE kode_barang ~ '^BRG[0-9]+$'`
+
+	err := r.db.QueryRow(query).Scan(&lastNumber)
+	if err != nil {
+		return "", err
+	}
+
+	nextNumber := lastNumber + 1
+	return fmt.Sprintf("BRG%03d", nextNumber), nil
+}
+
 func (r *barangRepository) Create(barang *models.Barang) error {
+	// Auto-generate kode barang if empty
+	if barang.KodeBarang == "" {
+		kode, err := r.GenerateKodeBarang()
+		if err != nil {
+			return err
+		}
+		barang.KodeBarang = kode
+	}
+
 	query := `INSERT INTO master_barang (kode_barang, nama_barang, kategori, satuan, harga_beli, harga_jual)
 	          VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, created_at, updated_at`
 

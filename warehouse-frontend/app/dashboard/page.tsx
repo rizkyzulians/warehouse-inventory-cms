@@ -133,7 +133,7 @@ export default function DashboardPage() {
             <div className="text-blue-600 font-semibold">Master Barang</div>
           </Link>
           <Link href="/dashboard/stok" className="text-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition">
-            <div className="text-green-600 font-semibold">Stok</div>
+            <div className="text-green-600 font-semibold">Stock</div>
           </Link>
           <Link href="/dashboard/pembelian" className="text-center p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition">
             <div className="text-yellow-600 font-semibold">Pembelian</div>

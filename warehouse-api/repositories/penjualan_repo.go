@@ -11,6 +11,7 @@ type PenjualanRepository interface {
 	CreateDetail(tx *sql.Tx, detail *models.JualDetail) error
 	FindAll(limit, offset int) ([]models.JualHeader, int, error)
 	FindByID(id int) (*models.JualHeaderWithDetail, error)
+	GenerateNoFaktur(tanggal string) (string, error)
 }
 
 type penjualanRepository struct {
@@ -120,4 +121,24 @@ func (r *penjualanRepository) FindByID(id int) (*models.JualHeaderWithDetail, er
 
 	header.Details = details
 	return header, nil
+}
+
+func (r *penjualanRepository) GenerateNoFaktur(tanggal string) (string, error) {
+	// Format: JL/YYYYMMDD/001
+	// Extract date from tanggal (format: YYYY-MM-DD)
+	datePrefix := tanggal[0:4] + tanggal[5:7] + tanggal[8:10]
+
+	var lastNumber int
+	query := `SELECT COALESCE(MAX(CAST(SUBSTRING(no_faktur FROM LENGTH(no_faktur) - 2) AS INTEGER)), 0)
+	          FROM jual_header 
+	          WHERE no_faktur LIKE $1`
+
+	pattern := fmt.Sprintf("JL/%s/%%", datePrefix)
+	err := r.db.QueryRow(query, pattern).Scan(&lastNumber)
+	if err != nil {
+		return "", err
+	}
+
+	nextNumber := lastNumber + 1
+	return fmt.Sprintf("JL/%s/%03d", datePrefix, nextNumber), nil
 }

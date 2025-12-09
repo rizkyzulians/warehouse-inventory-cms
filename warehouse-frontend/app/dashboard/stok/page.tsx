@@ -48,7 +48,7 @@ export default function StokPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Laporan Stok</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Laporan Stock</h1>
         <button
           onClick={fetchStoks}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -82,7 +82,7 @@ export default function StokPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Qty Masuk</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Qty Keluar</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Akhir</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Akhir</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">

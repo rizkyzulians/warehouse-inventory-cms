@@ -36,16 +36,30 @@ func (s *pembelianService) CreatePembelian(req *models.CreatePembelianRequest, u
 		return nil, fmt.Errorf("details cannot be empty")
 	}
 
+	// Auto-generate no faktur if empty
+	if req.NoFaktur == "" {
+		noFaktur, err := s.pembelianRepo.GenerateNoFaktur(req.Tanggal)
+		if err != nil {
+			return nil, err
+		}
+		req.NoFaktur = noFaktur
+	}
+
 	// Calculate total
 	var total float64
-	for _, detail := range req.Details {
-		// Validate barang exists
-		_, err := s.barangRepo.FindByID(detail.BarangID)
+	for i, detail := range req.Details {
+		// Validate barang exists and get harga beli
+		barang, err := s.barangRepo.FindByID(detail.BarangID)
 		if err != nil {
 			return nil, fmt.Errorf("barang with id %d not found", detail.BarangID)
 		}
 
-		subtotal := float64(detail.Qty) * detail.Harga
+		// Auto-fill harga beli from master barang if not provided
+		if detail.Harga == 0 {
+			req.Details[i].Harga = barang.HargaBeli
+		}
+
+		subtotal := float64(detail.Qty) * req.Details[i].Harga
 		total += subtotal
 	}
 

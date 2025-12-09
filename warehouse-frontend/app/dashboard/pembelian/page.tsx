@@ -17,6 +17,8 @@ interface Barang {
   id: number
   kode_barang: string
   nama_barang: string
+  harga_beli: number
+  harga_jual: number
 }
 
 interface DetailItem {
@@ -106,6 +108,15 @@ export default function PembelianPage() {
   const updateDetail = (index: number, field: keyof DetailItem, value: number) => {
     const newDetails = [...details]
     newDetails[index][field] = value
+    
+    // Auto-fill harga beli when barang is selected
+    if (field === 'barang_id' && value > 0) {
+      const selectedBarang = barangs.find(b => b.id === value)
+      if (selectedBarang) {
+        newDetails[index].harga = selectedBarang.harga_beli
+      }
+    }
+    
     setDetails(newDetails)
   }
 
@@ -211,10 +222,10 @@ export default function PembelianPage() {
                       <label className="block text-gray-700 text-sm font-bold mb-2">No Faktur</label>
                       <input
                         type="text"
+                        placeholder="Auto-generated"
                         value={formData.no_faktur}
                         onChange={(e) => setFormData({ ...formData, no_faktur: e.target.value })}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                        required
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-50"
                       />
                     </div>
                     <div>
@@ -287,11 +298,11 @@ export default function PembelianPage() {
                         />
                         <input
                           type="number"
-                          placeholder="Harga"
+                          placeholder="Harga Beli"
                           value={detail.harga || ''}
                           onChange={(e) => updateDetail(index, 'harga', Number(e.target.value))}
-                          className="border rounded py-2 px-3 text-gray-700"
-                          required
+                          className="border rounded py-2 px-3 text-gray-700 bg-gray-50"
+                          readOnly
                         />
                         <button
                           type="button"

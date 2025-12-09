@@ -106,9 +106,9 @@ func (h *BarangHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate input
-	if req.KodeBarang == "" || req.NamaBarang == "" || req.Satuan == "" {
-		SendErrorResponse(w, http.StatusUnprocessableEntity, "Kode barang, nama barang, and satuan are required", "")
+	// Validate input - kode barang sudah auto-generate
+	if req.NamaBarang == "" || req.Satuan == "" {
+		SendErrorResponse(w, http.StatusUnprocessableEntity, "Nama barang and satuan are required", "")
 		return
 	}
 

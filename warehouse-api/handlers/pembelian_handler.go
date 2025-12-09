@@ -26,9 +26,9 @@ func (h *PembelianHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate input
-	if req.NoFaktur == "" || req.Tanggal == "" || req.Supplier == "" {
-		SendErrorResponse(w, http.StatusUnprocessableEntity, "No faktur, tanggal, and supplier are required", "")
+	// Validate input - no faktur sudah auto-generate
+	if req.Tanggal == "" || req.Supplier == "" {
+		SendErrorResponse(w, http.StatusUnprocessableEntity, "Tanggal and supplier are required", "")
 		return
 	}
 

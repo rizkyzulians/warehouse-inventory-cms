@@ -17,6 +17,8 @@ interface Barang {
   id: number
   kode_barang: string
   nama_barang: string
+  harga_beli: number
+  harga_jual: number
 }
 
 interface DetailItem {
@@ -106,6 +108,15 @@ export default function PenjualanPage() {
   const updateDetail = (index: number, field: keyof DetailItem, value: number) => {
     const newDetails = [...details]
     newDetails[index][field] = value
+    
+    // Auto-fill harga jual when barang is selected
+    if (field === 'barang_id' && value > 0) {
+      const selectedBarang = barangs.find(b => b.id === value)
+      if (selectedBarang) {
+        newDetails[index].harga = selectedBarang.harga_jual
+      }
+    }
+    
     setDetails(newDetails)
   }
 
@@ -208,13 +219,13 @@ export default function PenjualanPage() {
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">No Faktur</label>
+                      <label className="block text-gray-700 text-sm font-bold mb-2">No Faktur (Auto)</label>
                       <input
                         type="text"
+                        placeholder="Auto-generate"
                         value={formData.no_faktur}
                         onChange={(e) => setFormData({ ...formData, no_faktur: e.target.value })}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                        required
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-50"
                       />
                     </div>
                     <div>
@@ -287,11 +298,11 @@ export default function PenjualanPage() {
                         />
                         <input
                           type="number"
-                          placeholder="Harga"
+                          placeholder="Harga (Auto)"
                           value={detail.harga || ''}
                           onChange={(e) => updateDetail(index, 'harga', Number(e.target.value))}
-                          className="border rounded py-2 px-3 text-gray-700"
-                          required
+                          className="border rounded py-2 px-3 text-gray-700 bg-gray-50"
+                          readOnly
                         />
                         <button
                           type="button"

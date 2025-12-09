@@ -11,6 +11,7 @@ type PembelianRepository interface {
 	CreateDetail(tx *sql.Tx, detail *models.BeliDetail) error
 	FindAll(limit, offset int) ([]models.BeliHeader, int, error)
 	FindByID(id int) (*models.BeliHeaderWithDetail, error)
+	GenerateNoFaktur(tanggal string) (string, error)
 }
 
 type pembelianRepository struct {
@@ -120,4 +121,24 @@ func (r *pembelianRepository) FindByID(id int) (*models.BeliHeaderWithDetail, er
 
 	header.Details = details
 	return header, nil
+}
+
+func (r *pembelianRepository) GenerateNoFaktur(tanggal string) (string, error) {
+	// Format: BL/YYYYMMDD/001
+	// Extract date from tanggal (format: YYYY-MM-DD)
+	datePrefix := tanggal[0:4] + tanggal[5:7] + tanggal[8:10]
+
+	var lastNumber int
+	query := `SELECT COALESCE(MAX(CAST(SUBSTRING(no_faktur FROM LENGTH(no_faktur) - 2) AS INTEGER)), 0)
+	          FROM beli_header 
+	          WHERE no_faktur LIKE $1`
+
+	pattern := fmt.Sprintf("BL/%s/%%", datePrefix)
+	err := r.db.QueryRow(query, pattern).Scan(&lastNumber)
+	if err != nil {
+		return "", err
+	}
+
+	nextNumber := lastNumber + 1
+	return fmt.Sprintf("BL/%s/%03d", datePrefix, nextNumber), nil
 }
